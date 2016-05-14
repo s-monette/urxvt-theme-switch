@@ -49,7 +49,7 @@ sub save_state {
     my $esc  = shift;
     my $fno  = $self->{settingsfile};
     open( OUT, ">$fno" ) or print STDERR "Unable to open $fno for writing";
-    print OUT $esc;
+    print OUT "#include \"$esc\"";
     close(OUT);
 }
 
@@ -155,7 +155,7 @@ sub on_user_command {
         my $fn  = $fs[ $idx % $len ];
         my $esc = build_cmd($fn, $self->{preprocessor});
         if ( $self->{auto_save_state} or $subcmd eq "save-state" ) {
-            save_state( $self, $esc );
+            save_state( $self, $fn );
         }
         $self->cmd_parse($esc);
         $fn =~ s{.*/}{};
