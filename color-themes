@@ -17,7 +17,6 @@
 #
 #  URxvt.color-themes.state-file: ~/.urxvt-theme
 #  URxvt.color-themes.autosave: 1
-#  URxvt.keysym.M-C-l:  perl:color-themes:load-state
 #  URxvt.keysym.M-C-s:  perl:color-themes:save-state
 #
 use strict;
@@ -42,18 +41,7 @@ sub on_start {
     $self->{preprocessor} =
       glob( $self->x_resource('color-themes.preprocessor') || "" );
 
-    load_state($self);
-
     ();
-}
-
-sub load_state {
-    my $self = shift;
-    my $fn   = $self->{settingsfile};
-    open my $fin, $fn
-      or print STDERR "Unable to open $fn for reading" && return;
-    $self->cmd_parse(<$fin>);
-    close($fin);
 }
 
 sub save_state {
@@ -88,7 +76,6 @@ sub read_commands {
 }
 
 sub escape_seq {
-
     # XTerm Operating System Commands
     my %commands = (
         'colorBD'          => '5;0',
