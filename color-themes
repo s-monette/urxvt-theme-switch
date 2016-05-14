@@ -18,14 +18,14 @@
 #  URxvt.color-themes.state-file: ~/.urxvt-theme
 #  URxvt.color-themes.autosave: 1
 #  URxvt.keysym.M-C-s:  perl:color-themes:save-state
-#
+
 use strict;
 
 sub on_start {
     my ($self) = @_;
     $self->{current_index} = 0;
     my $path =
-      glob( $self->x_resource('color-themes.themedir') || "~/.themes/urxvt" );
+      glob( $self->x_resource('color-themes.themedir') || "/usr/share/base16/xresources/" );
 
     my @arr = ();
     if ( opendir( DIR, $path ) ) {
