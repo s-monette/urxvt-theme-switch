@@ -143,10 +143,7 @@ sub on_user_command {
         return;
     }
     my $subcmd = $parts[1];
-    if ( $subcmd eq "load-state" ) {
-        load_state($self);
-        return ();
-    }
+
     if ( $len > 0 ) {
         my $idx = $self->{current_index};
         if ( $subcmd eq "next" ) {
