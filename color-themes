@@ -21,7 +21,6 @@
 
 use strict;
 use File::Basename;
-use File::HomeDir;
 
 sub on_start {
     my ($self) = @_;
@@ -61,7 +60,7 @@ sub save_state {
     my $style = $words[1];
 
     # Get list of themes in atom base16
-    my $home  = File::HomeDir->my_home;
+    my $home  = $ENV{"HOME"};
     my $filename = "$home/.atom/packages/base16-syntax/lib/base16-settings.coffee";
     open(my $fh, '<:encoding(UTF-8)', $filename)
       or die "Could not open file '$filename' $!";
