@@ -20,6 +20,8 @@
 #  URxvt.keysym.M-C-s:  perl:color-themes:save-state
 
 use strict;
+use File::Basename;
+use File::HomeDir;
 
 sub on_start {
     my ($self) = @_;
