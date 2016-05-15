@@ -87,6 +87,8 @@ sub save_state {
     open( OUT, ">$fno" ) or print STDERR "Unable to open $fno for writing";
     print OUT "#include \"$esc\"";
     close(OUT);
+    system("xrdb ~/.Xresources");
+    system("i3-msg restart");
 }
 
 sub read_commands {
