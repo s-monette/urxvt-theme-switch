@@ -83,6 +83,13 @@ sub save_state {
     # because atom does not handle well having its configuration file yanked under him.
     system ("/usr/bin/vi", -esc, "%s/scheme:.*/scheme: $theme/|:wq", $file);
 
+    # if theme is light edit config
+    if ("$style" eq "light"){
+      system ("/usr/bin/vi", -esc, "%s/style:.*/style: \"Light\"/|:wq", $file);
+    } else {
+      system ("/usr/bin/vi", -esc, "%s/style:.*/style: \"Dark\"/|:wq", $file);
+    }
+
     open( OUT, ">$fno" ) or print STDERR "Unable to open $fno for writing";
     print OUT "#include \"$esc\"";
     close(OUT);
