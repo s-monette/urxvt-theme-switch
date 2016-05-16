@@ -57,7 +57,8 @@ sub update_atom {
 
   # Open file list of themes in atom base16
   my $home  = $ENV{"HOME"};
-  my $filename = "$home/.atom/packages/base16-syntax/lib/base16-settings.coffee";
+  my $atom_dir=".atom/packages/base16-syntax/lib/base16-settings.coffee";
+  my $filename = "$home/$atom_dir";
   open(my $fh, '<:encoding(UTF-8)', $filename);
 
   # Compare current theme name to all themes in atom
