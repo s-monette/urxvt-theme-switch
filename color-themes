@@ -210,10 +210,11 @@ sub on_user_command {
         my $esc = build_cmd($fn, $self->{preprocessor});
         if ( $self->{auto_save_state} or $subcmd eq "save-state" ) {
             save_state( $self, $fn );
+        } else {
+          update_atom ($fn);
+          reload_i3theme();
+          $self->cmd_parse($esc);
         }
-        update_atom ($fn);
-        reload_i3theme();
-        $self->cmd_parse($esc);
         $fn =~ s{.*/}{};
         $msg = " Theme: " . $fn;
     }
