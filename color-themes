@@ -43,7 +43,10 @@ sub on_start {
       glob( $self->x_resource('color-themes.preprocessor') || "" );
     $self->{atom_dir} =
       glob( $self->x_resource('color-themes.atom_dir') || "" );
-
+    $self->{atom_update} =
+      glob( $self->x_resource('color-themes.atom_update') || 0 );
+    $self->{atom_update} =
+      glob( $self->x_resource('color-themes.i3_update') || 0 );
     ();
 }
 
@@ -211,8 +214,12 @@ sub on_user_command {
         if ( $self->{auto_save_state} or $subcmd eq "save-state" ) {
             save_state( $self, $fn );
         } else {
-          update_atom ($self, $fn);
-          reload_i3theme();
+          if ( $self->{atom_update} ) {
+            update_atom ($self, $fn);
+          }
+          if ( $self->{i3} ) {
+            reload_i3theme();
+          }
           $self->cmd_parse($esc);
         }
 
