@@ -45,62 +45,68 @@ sub on_start {
     ();
 }
 
+sub update_atom {
+  # Get and strip name of current theme found by urxvt
+  my $file = basename shift;
+  $file =~ s/base16-//g;
+  $file =~ s/.xresources//g;
+  $file =~ s/.256//g;
+  my @words = split /\./, $file;
+  my $theme = $words[0];
+  my $style = $words[1];
+
+  # Get list of themes in atom base16
+  my $home  = $ENV{"HOME"};
+  my $filename = "$home/.atom/packages/base16-syntax/lib/base16-settings.coffee";
+  open(my $fh, '<:encoding(UTF-8)', $filename)
+    or die "Could not open file '$filename' $!";
+  # Compare current theme name to all themes in atom
+  while (my $row = <$fh>) {
+    $row =~ s/^\s+|\s+$//g;
+    my $string = $row;
+    $string =~ s/ //g;
+    $string =~ s/"//g;
+
+    # Fix for theme without the same names
+    $theme= "harmonic" if ('harmonic16' eq "$theme");
+    $theme= "tube" if ('londontube' eq "$theme");
+    $theme= "seti" if ('setiui' eq "$theme");
+
+    # when theme names match set value
+    if (lc "$string" eq lc "$theme") {
+      $theme = $row;
+    }
+  }
+  # Replace atom config with our theme
+  my $file = "$home/.atom/config.cson";
+  # Had to use vi so the file will be edited in place instead of being overwriten
+  # because atom does not handle well having its configuration file yanked under him.
+  system ("/usr/bin/vi", -esc, "%s/scheme:.*/scheme: $theme/|:wq", $file);
+
+  # if theme is light edit config
+  if ("$style" eq "light"){
+    system ("/usr/bin/vi", -esc, "%s/style:.*/style: \"Light\"/|:wq", $file);
+  } else {
+    system ("/usr/bin/vi", -esc, "%s/style:.*/style: \"Dark\"/|:wq", $file);
+  }
+}
+
+sub reload_i3theme{
+  system("xrdb ~/.Xresources");
+  system("i3-msg restart");
+}
+
 sub save_state {
     my $self = shift;
     my $esc  = shift;
     my $fno  = $self->{settingsfile};
 
-    # Get and strip name of current theme found by urxvt
-    my $file = basename $esc;
-    $file =~ s/base16-//g;
-    $file =~ s/.xresources//g;
-    $file =~ s/.256//g;
-    my @words = split /\./, $file;
-    my $theme = $words[0];
-    my $style = $words[1];
-
-    # Get list of themes in atom base16
-    my $home  = $ENV{"HOME"};
-    my $filename = "$home/.atom/packages/base16-syntax/lib/base16-settings.coffee";
-    open(my $fh, '<:encoding(UTF-8)', $filename)
-      or die "Could not open file '$filename' $!";
-    # Compare current theme name to all themes in atom
-    while (my $row = <$fh>) {
-      chomp $row;
-
-      $row =~ s/^\s+|\s+$//g;
-      my $string = $row;
-      $string =~ s/ //g;
-      $string =~ s/"//g;
-
-      # Fix for theme without the same names
-      $theme= "harmonic" if ('harmonic16' eq "$theme");
-      $theme= "tube" if ('londontube' eq "$theme");
-      $theme= "seti" if ('setiui' eq "$theme");
-
-      # when theme names match set value
-      if (lc "$string" eq lc "$theme") {
-        $theme = $row;
-      }
-    }
-    # Replace atom config with our theme
-    my $file = "$home/.atom/config.cson";
-    # Had to use vi so the file will be edited in place instead of being overwriten
-    # because atom does not handle well having its configuration file yanked under him.
-    system ("/usr/bin/vi", -esc, "%s/scheme:.*/scheme: $theme/|:wq", $file);
-
-    # if theme is light edit config
-    if ("$style" eq "light"){
-      system ("/usr/bin/vi", -esc, "%s/style:.*/style: \"Light\"/|:wq", $file);
-    } else {
-      system ("/usr/bin/vi", -esc, "%s/style:.*/style: \"Dark\"/|:wq", $file);
-    }
-
     open( OUT, ">$fno" ) or print STDERR "Unable to open $fno for writing";
     print OUT "#include \"$esc\"";
     close(OUT);
-    system("xrdb ~/.Xresources");
-    system("i3-msg restart");
+
+    update_atom ($esc);
+    reload_i3theme();
 }
 
 sub read_commands {
