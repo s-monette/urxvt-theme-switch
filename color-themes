@@ -72,6 +72,12 @@ sub save_state {
       my $string = $row;
       $string =~ s/ //g;
       $string =~ s/"//g;
+
+      # Fix for theme without the same names
+      $theme= "harmonic" if ('harmonic16' eq "$theme");
+      $theme= "tube" if ('londontube' eq "$theme");
+      $theme= "seti" if ('setiui' eq "$theme");
+
       # when theme names match set value
       if (lc "$string" eq lc "$theme") {
         $theme = $row;
