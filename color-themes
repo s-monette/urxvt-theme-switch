@@ -98,7 +98,7 @@ sub update_atom {
   }
 }
 
-sub reload_i3theme{
+sub reload_i3theme {
   system("xrdb ~/.Xresources");
   system("i3-msg restart");
 }
@@ -217,7 +217,7 @@ sub on_user_command {
           if ( $self->{atom_update} ) {
             update_atom ($self, $fn);
           }
-          if ( $self->{i3} ) {
+          if ( $self->{i3_update} ) {
             reload_i3theme();
           }
           $self->cmd_parse($esc);
