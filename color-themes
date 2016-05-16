@@ -50,6 +50,7 @@ sub on_start {
 sub update_atom {
   my ($self, $file) = @_;
   # Get and strip name of current theme found by urxvt
+  my $file = basename $file;
   $file =~ s/base16-//g;
   $file =~ s/.xresources//g;
   $file =~ s/.256//g;
