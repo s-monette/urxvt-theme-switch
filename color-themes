@@ -48,8 +48,8 @@ sub on_start {
 }
 
 sub update_atom {
+  my ($self, $file) = @_;
   # Get and strip name of current theme found by urxvt
-  my $file = basename shift;
   $file =~ s/base16-//g;
   $file =~ s/.xresources//g;
   $file =~ s/.256//g;
@@ -87,7 +87,7 @@ sub update_atom {
   system ("/usr/bin/vi", -esc, "%s/scheme:.*/scheme: $theme/|:wq", $file);
 
   # if theme is light edit config
-  if ("$style" eq "light"){
+  if ("$style" eq "light") {
     system ("/usr/bin/vi", -esc, "%s/style:.*/style: \"Light\"/|:wq", $file);
   } else {
     system ("/usr/bin/vi", -esc, "%s/style:.*/style: \"Dark\"/|:wq", $file);
@@ -100,28 +100,26 @@ sub reload_i3theme{
 }
 
 sub save_state {
-    my $self = shift;
-    my $esc  = shift;
+    my ($self, $esc) = @_;
     my $fno  = $self->{settingsfile};
 
-    open( OUT, ">$fno" ) or print STDERR "Unable to open $fno for writing";
+    open(OUT, ">$fno") or print STDERR "Unable to open $fno for writing";
     print OUT "#include \"$esc\"";
     close(OUT);
 }
 
 sub read_commands {
-    my $fn = shift;
-    my $preproc = shift;
+    my ($fn, $preproc) = @_;
     my $fin;
     if ($preproc eq '') {
-	open($fin, $fn) or print STDERR "Unable to open $fn for reading\n";
+      open($fin, $fn) or print STDERR "Unable to open $fn for reading\n";
     } else {
-	open($fin, "$preproc \"$fn\" |")
-	    or print STDERR "Unable to open $fn using '$preproc' \n";
+	     open($fin, "$preproc \"$fn\" |")
+        or print STDERR "Unable to open $fn using '$preproc' \n";
     }
     my %commands;
 
-    while ( my $line = <$fin> ) {
+    while (my $line = <$fin>) {
         if ( $line =~ /(\w+)\s*:\s*([^!]+)\s*\n/ ) {
             $commands{$1} = $2;
         }
@@ -155,13 +153,12 @@ sub escape_seq {
         'boldItalicFont'   => '713'
     );
 
-    my ( $k, $v ) = @_;
+    my ($k, $v) = @_;
     my $cmd = "";
 
-    if ( $k =~ /^color(\d+)$/ ) {
+    if ($k =~ /^color(\d+)$/) {
         $cmd = "4;$1;$v";
-    }
-    else {
+    } else {
         if ( not exists( $commands{$k} ) ) {
             return "";
         }
@@ -172,8 +169,7 @@ sub escape_seq {
 }
 
 sub build_cmd {
-    my $fn       = shift;
-    my $preproc  = shift;
+    my ($fn, $preproc) = @_;
     my %commands = read_commands($fn, $preproc);
     my $s = join( "", map { escape_seq( $_, $commands{$_} ) } keys %commands );
 
@@ -181,7 +177,7 @@ sub build_cmd {
 }
 
 sub key_press {
-    my ( $self, $event, $keysym, $string ) = @_;
+    my ($self, $event, $keysym, $string) = @_;
 
     delete $self->{overlay};
     $self->disable("key_press");
@@ -190,7 +186,7 @@ sub key_press {
 }
 
 sub on_user_command {
-    my ( $self, $cmd ) = @_;
+    my ($self, $cmd) = @_;
     my @fs  = @{ $self->{theme_files} };
     my $len = @fs;
     my $msg = "";
@@ -204,23 +200,24 @@ sub on_user_command {
         my $idx = $self->{current_index};
         if ( $subcmd eq "next" ) {
             $idx = ++$self->{current_index};
-        }
-        elsif ( $subcmd eq "prev" ) {
+        } elsif ( $subcmd eq "prev" ) {
             $idx = --$self->{current_index};
         }
+
         my $fn  = $fs[ $idx % $len ];
         my $esc = build_cmd($fn, $self->{preprocessor});
+
         if ( $self->{auto_save_state} or $subcmd eq "save-state" ) {
             save_state( $self, $fn );
         } else {
-          update_atom ($fn);
+          update_atom ($self, $fn);
           reload_i3theme();
           $self->cmd_parse($esc);
         }
+
         $fn =~ s{.*/}{};
         $msg = " Theme: " . $fn;
-    }
-    else {
+    } else {
         $msg = " No themes found in " . $self->{theme_dir};
     }
 
