@@ -41,6 +41,8 @@ sub on_start {
       glob( $self->x_resource('color-themes.state-file') || "~/.urxvt-theme" );
     $self->{preprocessor} =
       glob( $self->x_resource('color-themes.preprocessor') || "" );
+    $self->{atom_dir} =
+      glob( $self->x_resource('color-themes.atom_dir') || "" );
 
     ();
 }
@@ -56,9 +58,8 @@ sub update_atom {
   my $style = $words[1];
 
   # Open file list of themes in atom base16
-  my $home  = $ENV{"HOME"};
-  my $atom_dir=".atom/packages/base16-syntax/lib/base16-settings.coffee";
-  my $filename = "$home/$atom_dir";
+  my $atom_dir = $self->{atom_dir};
+  my $filename = "$atom_dir/packages/base16-syntax/lib/base16-settings.coffee";
   open(my $fh, '<:encoding(UTF-8)', $filename);
 
   # Compare current theme name to all themes in atom
@@ -80,7 +81,7 @@ sub update_atom {
     }
   }
   # Replace atom config with our theme
-  my $file = "$home/.atom/config.cson";
+  my $file = "$atom_dir/config.cson";
   # Had to use vi so the file will be edited in place instead of being overwriten
   # because atom does not handle well having its configuration file yanked under him.
   system ("/usr/bin/vi", -esc, "%s/scheme:.*/scheme: $theme/|:wq", $file);
