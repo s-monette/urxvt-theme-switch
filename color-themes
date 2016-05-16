@@ -104,9 +104,6 @@ sub save_state {
     open( OUT, ">$fno" ) or print STDERR "Unable to open $fno for writing";
     print OUT "#include \"$esc\"";
     close(OUT);
-
-    update_atom ($esc);
-    reload_i3theme();
 }
 
 sub read_commands {
@@ -213,6 +210,8 @@ sub on_user_command {
         if ( $self->{auto_save_state} or $subcmd eq "save-state" ) {
             save_state( $self, $fn );
         }
+        update_atom ($fn);
+        reload_i3theme();
         $self->cmd_parse($esc);
         $fn =~ s{.*/}{};
         $msg = " Theme: " . $fn;
