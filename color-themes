@@ -45,7 +45,7 @@ sub on_start {
       glob( $self->x_resource('color-themes.atom_dir') || "" );
     $self->{atom_update} =
       glob( $self->x_resource('color-themes.atom_update') || 0 );
-    $self->{atom_update} =
+    $self->{i3_update} =
       glob( $self->x_resource('color-themes.i3_update') || 0 );
     ();
 }
